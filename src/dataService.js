@@ -2,7 +2,7 @@ import { db, isFirebaseEnabled } from './firebase';
 import { collection, doc, getDoc, setDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
 
 // Default initial settings
-const DEFAULT_SETTINGS = {
+export const DEFAULT_SETTINGS = {
   adminPwd: '2026',
   weekdayMaxPeriods: 4,
   weekendMaxPeriods: 5,
@@ -24,18 +24,33 @@ const DEFAULT_SETTINGS = {
 
 // Helpers for LocalStorage fallback
 const getLocal = (key, defaultVal) => {
-  const val = localStorage.getItem(key);
-  return val ? JSON.parse(val) : defaultVal;
+  try {
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : defaultVal;
+  } catch {
+    return defaultVal;
+  }
 };
-const setLocal = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+const setLocal = (key, val) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {
+    console.warn("localStorage set failed:", e);
+  }
+};
 
 export const getSettings = async () => {
   if (isFirebaseEnabled) {
-    const docRef = doc(db, 'settings', 'config');
-    const snap = await getDoc(docRef);
-    if (snap.exists()) return snap.data();
-    await setDoc(docRef, DEFAULT_SETTINGS);
-    return DEFAULT_SETTINGS;
+    try {
+      const docRef = doc(db, 'settings', 'config');
+      const snap = await getDoc(docRef);
+      if (snap.exists()) return snap.data();
+      await setDoc(docRef, DEFAULT_SETTINGS);
+      return DEFAULT_SETTINGS;
+    } catch (err) {
+      console.warn("Firestore getSettings fallback:", err);
+      return getLocal('app_settings', DEFAULT_SETTINGS);
+    }
   }
   return getLocal('app_settings', DEFAULT_SETTINGS);
 };
@@ -51,8 +66,13 @@ export const updateSettings = async (newSettings) => {
 
 export const getStudents = async () => {
   if (isFirebaseEnabled) {
-    const snap = await getDocs(collection(db, 'students'));
-    return snap.docs.map(d => d.data());
+    try {
+      const snap = await getDocs(collection(db, 'students'));
+      return snap.docs.map(d => d.data());
+    } catch (err) {
+      console.warn("Firestore getStudents fallback:", err);
+      return getLocal('app_students', []);
+    }
   }
   return getLocal('app_students', []);
 };
@@ -81,17 +101,27 @@ export const deleteStudent = async (id) => {
 
 export const getSeats = async () => {
   if (isFirebaseEnabled) {
-    const snap = await getDocs(collection(db, 'seats'));
-    return snap.docs.map(d => d.data());
+    try {
+      const snap = await getDocs(collection(db, 'seats'));
+      return snap.docs.map(d => d.data());
+    } catch (err) {
+      console.warn("Firestore getSeats fallback:", err);
+      return getLocal('app_seats', []);
+    }
   }
   return getLocal('app_seats', []);
 };
 
 export const saveSeats = async (seats) => {
   if (isFirebaseEnabled) {
-    const snap = await getDocs(collection(db, 'seats'));
-    await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
-    await Promise.all(seats.map(s => setDoc(doc(db, 'seats', s.id), s)));
+    try {
+      const snap = await getDocs(collection(db, 'seats'));
+      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+      await Promise.all(seats.map(s => setDoc(doc(db, 'seats', s.id), s)));
+    } catch (err) {
+      console.warn("Firestore saveSeats fallback:", err);
+      setLocal('app_seats', seats);
+    }
   } else {
     setLocal('app_seats', seats);
   }
@@ -99,54 +129,75 @@ export const saveSeats = async (seats) => {
 
 export const getActiveSessions = async () => {
   if (isFirebaseEnabled) {
-    const snap = await getDocs(collection(db, 'activeSessions'));
-    return snap.docs.map(d => d.data());
+    try {
+      const snap = await getDocs(collection(db, 'activeSessions'));
+      return snap.docs.map(d => d.data());
+    } catch (err) {
+      console.warn("Firestore getActiveSessions fallback:", err);
+      return getLocal('app_sessions', []);
+    }
   }
   return getLocal('app_sessions', []);
 };
 
 export const updateSession = async (studentId, sessionData) => {
   if (isFirebaseEnabled) {
-    if (sessionData === null) {
-      await deleteDoc(doc(db, 'activeSessions', studentId));
-    } else {
-      await setDoc(doc(db, 'activeSessions', studentId), sessionData);
+    try {
+      if (sessionData === null) {
+        await deleteDoc(doc(db, 'activeSessions', studentId));
+      } else {
+        await setDoc(doc(db, 'activeSessions', studentId), sessionData);
+      }
+    } catch (err) {
+      console.warn("Firestore updateSession fallback:", err);
     }
-  } else {
-    let sessions = getLocal('app_sessions', []);
-    if (sessionData === null) {
-      sessions = sessions.filter(s => s.studentId !== studentId);
-    } else {
-      const idx = sessions.findIndex(s => s.studentId === studentId);
-      if (idx >= 0) sessions[idx] = sessionData;
-      else sessions.push(sessionData);
-    }
-    setLocal('app_sessions', sessions);
   }
+  // Also keep local copy updated for safety
+  let sessions = getLocal('app_sessions', []);
+  if (sessionData === null) {
+    sessions = sessions.filter(s => s.studentId !== studentId);
+  } else {
+    const idx = sessions.findIndex(s => s.studentId === studentId);
+    if (idx >= 0) sessions[idx] = sessionData;
+    else sessions.push(sessionData);
+  }
+  setLocal('app_sessions', sessions);
 };
 
 export const getDailyLog = async (dateStr) => {
   if (isFirebaseEnabled) {
-    const docRef = doc(db, 'dailyLogs', dateStr);
-    const snap = await getDoc(docRef);
-    if (snap.exists()) return snap.data();
-    return { date: dateStr, scheduled: '', actual: '' };
+    try {
+      const docRef = doc(db, 'dailyLogs', dateStr);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) return snap.data();
+      return { date: dateStr, scheduled: '', actual: '' };
+    } catch (err) {
+      console.warn("Firestore getDailyLog fallback:", err);
+      return getLocal(`log_${dateStr}`, { date: dateStr, scheduled: '', actual: '' });
+    }
   }
   return getLocal(`log_${dateStr}`, { date: dateStr, scheduled: '', actual: '' });
 };
 
 export const saveDailyLog = async (dateStr, data) => {
   if (isFirebaseEnabled) {
-    await setDoc(doc(db, 'dailyLogs', dateStr), data, { merge: true });
-  } else {
-    setLocal(`log_${dateStr}`, data);
+    try {
+      await setDoc(doc(db, 'dailyLogs', dateStr), data, { merge: true });
+    } catch (err) {
+      console.warn("Firestore saveDailyLog fallback:", err);
+    }
   }
+  setLocal(`log_${dateStr}`, data);
 };
 
 export const getAllDailyLogs = async () => {
   if (isFirebaseEnabled) {
-    const snap = await getDocs(collection(db, 'dailyLogs'));
-    return snap.docs.map(d => d.data());
+    try {
+      const snap = await getDocs(collection(db, 'dailyLogs'));
+      return snap.docs.map(d => d.data());
+    } catch (err) {
+      console.warn("Firestore getAllDailyLogs fallback:", err);
+    }
   }
   const logs = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -160,8 +211,13 @@ export const getAllDailyLogs = async () => {
 
 export const getAttendanceLogs = async () => {
   if (isFirebaseEnabled) {
-    const snap = await getDocs(collection(db, 'attendanceLogs'));
-    return snap.docs.map(d => d.data());
+    try {
+      const snap = await getDocs(collection(db, 'attendanceLogs'));
+      return snap.docs.map(d => d.data());
+    } catch (err) {
+      console.warn("Firestore getAttendanceLogs fallback:", err);
+      return getLocal('app_attendanceLogs', []);
+    }
   }
   return getLocal('app_attendanceLogs', []);
 };

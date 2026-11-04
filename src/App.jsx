@@ -2,26 +2,31 @@ import { useState, useEffect } from 'react';
 import KioskMode from './components/KioskMode';
 import AdminMode from './components/AdminMode';
 import { ModalProvider } from './components/ModalProvider';
-import { getSettings, runAutomations } from './dataService';
+import { DEFAULT_SETTINGS, getSettings, runAutomations } from './dataService';
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
-  const load = async () => setSettings(await getSettings());
+  const load = async () => {
+    try {
+      const s = await getSettings();
+      if (s) setSettings(s);
+    } catch (e) {
+      console.warn("Settings load error, continuing with defaults:", e);
+    }
+  };
 
   useEffect(() => { 
     load();
     
     // 1분(60초)마다 백그라운드에서 자동화 로직 수행
     const interval = setInterval(() => {
-      runAutomations(); // dataService.js 내에서 스스로 최신 settings를 가져오도록 수정됨
+      runAutomations();
     }, 60000); 
     
     return () => clearInterval(interval);
   }, []);
-
-  if (!settings) return null;
 
   return (
     <ModalProvider>
