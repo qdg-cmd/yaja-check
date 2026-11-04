@@ -263,8 +263,8 @@ export default function KioskMode({ onAdminLogin, settings }) {
           
           <button 
             onClick={handleAdminClick} 
-            className="mobile-fab-extended"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#334155', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+            className="btn btn-primary mobile-fab-extended"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
             <UserCheck size={18} /> <span>👨‍🏫 감독교사 모드</span>
           </button>

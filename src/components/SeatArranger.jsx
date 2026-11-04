@@ -7,6 +7,7 @@ export default function SeatArranger() {
   const { showAlert, showConfirm, showPrompt } = useModal();
   const [seats, setSeats] = useState([]);
   const [dragging, setDragging] = useState(null);
+  const [touchDrag, setTouchDrag] = useState(null);
   
   const [rows, setRows] = useState(5);
   const [cols, setCols] = useState(5);
@@ -97,8 +98,8 @@ export default function SeatArranger() {
     const id = e.dataTransfer.getData('text/plain');
     const rect = e.currentTarget.getBoundingClientRect();
     
-    let rawX = e.clientX - rect.left - 25; 
-    let rawY = e.clientY - rect.top - 25;
+    let rawX = (e.clientX - rect.left) / mapZoom - 25; 
+    let rawY = (e.clientY - rect.top) / mapZoom - 25;
     
     const x = Math.round(rawX / GRID_SIZE) * GRID_SIZE;
     const y = Math.round(rawY / GRID_SIZE) * GRID_SIZE;
@@ -109,6 +110,36 @@ export default function SeatArranger() {
 
   const handleDragOver = (e) => {
     e.preventDefault();
+  };
+
+  const handleTouchStart = (e, seat) => {
+    if (toolMode !== 'MOVE') return;
+    const touch = e.touches[0];
+    setTouchDrag({
+      seatId: seat.id,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      seatX: seat.x,
+      seatY: seat.y,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchDrag) return;
+    const touch = e.touches[0];
+    const dx = (touch.clientX - touchDrag.startX) / mapZoom;
+    const dy = (touch.clientY - touchDrag.startY) / mapZoom;
+    
+    const rawX = touchDrag.seatX + dx;
+    const rawY = touchDrag.seatY + dy;
+    const newX = Math.max(0, Math.round(rawX / GRID_SIZE) * GRID_SIZE);
+    const newY = Math.max(0, Math.round(rawY / GRID_SIZE) * GRID_SIZE);
+    
+    setSeats(prev => prev.map(s => s.id === touchDrag.seatId ? { ...s, x: newX, y: newY } : s));
+  };
+
+  const handleTouchEnd = () => {
+    setTouchDrag(null);
   };
 
   const handleAutoGrid = async () => {
@@ -173,7 +204,7 @@ export default function SeatArranger() {
         </button>
         
         <p className="text-muted text-sm" style={{ lineHeight: 1.6 }}>
-          * [이동] 마우스로 좌석을 드래그하여 배치하세요.<br/>
+          * [이동] 마우스 드래그 또는 터치로 좌석을 끌어서 배치하세요.<br/>
           * [속성 전환] 붓으로 클릭해 지정/자유석을 전환합니다.<br/>
           * [이름 변경] 붓으로 클릭해 좌석 이름을 변경합니다.<br/>
           * 좌석을 더블클릭하면 즉시 삭제됩니다.
@@ -202,6 +233,10 @@ export default function SeatArranger() {
               key={seat.id}
               draggable={toolMode === 'MOVE'}
               onDragStart={(e) => handleDragStart(e, seat.id)}
+              onTouchStart={(e) => handleTouchStart(e, seat)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onTouchCancel={handleTouchEnd}
               onDoubleClick={() => handleDeleteSeat(seat.id)}
               onClick={() => handleSeatClick(seat)}
               style={{
@@ -217,8 +252,9 @@ export default function SeatArranger() {
                 cursor: toolMode === 'MOVE' ? 'grab' : 'pointer',
                 color: seat.type === 'assigned' ? '#cbd5e1' : 'var(--text-main)',
                 fontWeight: 'bold', fontSize: '0.8rem',
-                boxShadow: dragging === seat.id ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
-                opacity: dragging === seat.id ? 0.5 : 1,
+                boxShadow: (dragging === seat.id || touchDrag?.seatId === seat.id) ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
+                opacity: (dragging === seat.id || touchDrag?.seatId === seat.id) ? 0.6 : 1,
+                touchAction: toolMode === 'MOVE' ? 'none' : 'auto',
                 userSelect: 'none'
               }}
             >

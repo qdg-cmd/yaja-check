@@ -103,7 +103,7 @@ export default function Dashboard({ settings }) {
   const isOuting = (seatId) => isToday && sessions.some(s => s.seatId === seatId && s.status === 'OUTING');
 
   const [showMobileMap, setShowMobileMap] = useState(false);
-  const [mapZoom, setMapZoom] = useState(0.8);
+  const [mapZoom, setMapZoom] = useState(0.65);
 
   const zoomIn = () => setMapZoom(prev => Math.min(prev + 0.1, 2.0));
   const zoomOut = () => setMapZoom(prev => Math.max(prev - 0.1, 0.4));
@@ -195,27 +195,27 @@ export default function Dashboard({ settings }) {
         <StatCard icon={<span style={{fontSize:'1.5rem'}}>🧑‍🏫</span>} title={`실제 감독 교사`} value={supervisor.actual || '미지정'} />
       </div>
 
-      <div className="split-layout" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+      <div className="split-layout" style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
         
         {isToday && (
-          <div className={`card fade-in kiosk-map-pane ${showMobileMap ? 'show-modal' : ''}`} style={{ flex: '1 1 35%', position: 'sticky', top: '2rem', padding: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div className={`card fade-in kiosk-map-pane ${showMobileMap ? 'show-modal' : ''}`} style={{ flex: '1 1 42%', position: 'sticky', top: '2rem', padding: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <h3 className="jua text-main" style={{ fontSize: '1.2rem', margin: 0 }}>🗺️ 실시간 점유 현황</h3>
               {showMobileMap && <button className="btn btn-secondary" style={{ padding: '0.3rem 0.8rem' }} onClick={() => setShowMobileMap(false)}>닫기</button>}
             </div>
             
             <div className="map-scroll-container" style={{ 
-              position: 'relative', height: '400px', 
+              position: 'relative', height: '480px', 
               background: 'white', borderRadius: 'var(--radius-lg)', 
               boxShadow: 'var(--shadow-inner)', border: '1px solid var(--border)',
               backgroundImage: 'radial-gradient(#e2e8f0 1.5px, transparent 1.5px)', backgroundSize: '20px 20px',
-              overflow: 'auto'
+              overflow: 'hidden'
             }}>
               <div style={{ position: 'sticky', top: '10px', left: '10px', display: 'inline-flex', gap: '0.5rem', zIndex: 10 }}>
                 <button className="btn btn-secondary" style={{ padding: '0.5rem', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={zoomIn} title="확대"><Plus size={18} /></button>
                 <button className="btn btn-secondary" style={{ padding: '0.5rem', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={zoomOut} title="축소"><Minus size={18} /></button>
               </div>
-              <div style={{ transform: `scale(${mapZoom})`, transformOrigin: 'top left', minWidth: '800px', minHeight: '600px', transition: 'transform 0.2s' }}>
+              <div style={{ transform: `scale(${mapZoom})`, transformOrigin: 'top left', minWidth: '880px', minHeight: '620px', transition: 'transform 0.2s' }}>
                 {seats.map(seat => {
                   const session = sessions.find(s => s.seatId === seat.id && (s.status === 'IN' || s.status === 'OUTING'));
                   const occupied = session?.status === 'IN';
@@ -272,7 +272,7 @@ export default function Dashboard({ settings }) {
           </div>
         )}
 
-        <div className="card fade-in" style={{ flex: '1 1 65%', overflow: 'hidden' }}>
+        <div className="card fade-in" style={{ flex: '1 1 58%', overflow: 'hidden', padding: '1.25rem' }}>
           
           {isToday && (
             <div className="mobile-only" style={{ marginBottom: '1.5rem' }}>
@@ -287,17 +287,17 @@ export default function Dashboard({ settings }) {
             {isToday && currentPeriod && <span style={{ background: 'var(--success)', color: 'white', padding: '0.4rem 1rem', borderRadius: '20px', fontWeight: 'bold' }}>현재 {currentPeriod}교시 진행중</span>}
           </div>
           
-          <div className="table-container desktop-table">
-            <table>
+          <div className="table-container desktop-table dashboard-table-container" style={{ overflowX: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th>학번</th>
-                  <th>이름</th>
-                  {isToday && <th>좌석</th>}
-                  {isToday && <th>상태</th>}
-                  {isToday && <th>외출 사유</th>}
+                  <th style={{ width: '65px', textAlign: 'center' }}>학번</th>
+                  <th style={{ width: '75px', textAlign: 'center' }}>이름</th>
+                  {isToday && <th style={{ width: '50px', textAlign: 'center' }}>좌석</th>}
+                  {isToday && <th style={{ width: '75px', textAlign: 'center' }}>상태</th>}
+                  {isToday && <th style={{ width: '85px', textAlign: 'center' }}>외출 사유</th>}
                   {Array.from({ length: maxPeriods }).map((_, i) => (
-                    <th key={i} style={{ textAlign: 'center' }}>{i + 1}교시</th>
+                    <th key={i} style={{ textAlign: 'center', width: '42px' }}>{i + 1}교시</th>
                   ))}
                 </tr>
               </thead>
@@ -315,22 +315,22 @@ export default function Dashboard({ settings }) {
 
                   return (
                     <tr key={st.id}>
-                      <td className="font-bold">{st.id}</td>
-                      <td>{st.name}</td>
-                      {isToday && <td className="text-accent font-bold">{session?.seatId || '-'}</td>}
+                      <td className="font-bold" style={{ textAlign: 'center' }}>{st.id}</td>
+                      <td style={{ textAlign: 'center', fontWeight: '600' }}>{st.name}</td>
+                      {isToday && <td className="text-accent font-bold" style={{ textAlign: 'center' }}>{session?.seatId || '-'}</td>}
                       {isToday && (
                         <td 
                           onClick={() => session ? handleForceCheckout(st.id, st.name) : null}
-                          style={{ cursor: session ? 'pointer' : 'default' }}
+                          style={{ cursor: session ? 'pointer' : 'default', textAlign: 'center' }}
                           title={session ? "클릭 시 강제 퇴실 처리" : ""}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: session ? 1 : 0.5 }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', opacity: session ? 1 : 0.5 }}>
                             <span className={`status-dot ${statusDot}`}></span>
-                            <span style={{ fontSize: '0.875rem', fontWeight: 'bold', textDecoration: session ? 'underline' : 'none' }}>{statusLabel}</span>
+                            <span style={{ fontSize: '0.875rem', fontWeight: 'bold', textDecoration: session ? 'underline' : 'none', whiteSpace: 'nowrap' }}>{statusLabel}</span>
                           </div>
                         </td>
                       )}
-                      {isToday && <td className="text-muted text-sm">{session?.destination || '-'}</td>}
+                      {isToday && <td className="text-muted text-sm" style={{ textAlign: 'center' }}>{session?.destination || '-'}</td>}
                       
                       {Array.from({ length: maxPeriods }).map((_, i) => {
                         const period = String(i + 1);
@@ -339,14 +339,14 @@ export default function Dashboard({ settings }) {
                         
                         let display = <span style={{ color: 'var(--border)' }}>-</span>;
                         
-                        if (status === 'PRESENT') display = <span style={{ color: 'var(--success)', fontSize: '1.2rem' }}>🟢</span>;
-                        else if (status === 'ABSENT') display = <span style={{ color: 'var(--danger)', fontSize: '1.2rem' }}>🔴</span>;
-                        else if (status === 'UNSCHEDULED') display = <span style={{ color: 'var(--warning)', fontSize: '1.2rem' }}>🟡</span>;
+                        if (status === 'PRESENT') display = <span style={{ color: 'var(--success)', fontSize: '1.15rem' }}>🟢</span>;
+                        else if (status === 'ABSENT') display = <span style={{ color: 'var(--danger)', fontSize: '1.15rem' }}>🔴</span>;
+                        else if (status === 'UNSCHEDULED') display = <span style={{ color: 'var(--warning)', fontSize: '1.15rem' }}>🟡</span>;
                         else if (isScheduled) {
                           if (!isToday || (isToday && Number(period) < Number(currentPeriod))) {
-                            display = <span style={{ color: 'var(--danger)', fontSize: '1.2rem' }}>🔴</span>;
+                            display = <span style={{ color: 'var(--danger)', fontSize: '1.15rem' }}>🔴</span>;
                           } else {
-                            display = <span style={{ color: 'var(--danger)', fontSize: '1.2rem', opacity: 0.3 }}>🔴</span>; 
+                            display = <span style={{ color: 'var(--danger)', fontSize: '1.15rem', opacity: 0.3 }}>🔴</span>; 
                           }
                         }
 
