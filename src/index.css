@@ -1,0 +1,642 @@
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=Jua&display=swap');
+
+:root {
+  /* Material Design 3 (M3) Color Roles */
+  --md-sys-color-primary: #0b57d0;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #d3e3fd;
+  --md-sys-color-on-primary-container: #041e49;
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-surface-container: #f0f4f9;
+  --md-sys-color-surface-container-high: #e9eef6;
+  --md-sys-color-surface-container-low: #f8fafc;
+  --md-sys-color-outline: #747775;
+  --md-sys-color-outline-variant: #c4c7c5;
+
+  /* App Theme Variables mapped to M3 */
+  --primary: #1e293b;
+  --primary-light: #334155;
+  --accent: #0b57d0;
+  --accent-hover: #0842a0;
+  --success: #137333;
+  --warning: #b06000;
+  --danger: #ba1a1a;
+  --bg-color: #f8fafc;
+  --surface: #ffffff;
+  --text-main: #1f1f1f;
+  --text-muted: #5e5e5e;
+  --border: #e2e8f0;
+  
+  --shadow-sm: 0 1px 3px 1px rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 6px 2px rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 4px 12px 3px rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* M3 Shape Scale */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Pretendard', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Typography */
+.jua { font-family: 'Jua', 'Pretendard', sans-serif; font-weight: 400; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent); }
+
+/* Layout & Containers */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
+}
+
+.card {
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s ease;
+}
+
+/* Material Design 3 Buttons & Actions */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px; /* M3 48px minimum touch target */
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  border-radius: var(--radius-full); /* M3 Pill shape */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  font-size: 0.95rem;
+  gap: 0.5rem;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+.btn-primary:hover { 
+  background-color: var(--accent-hover); 
+  box-shadow: var(--shadow-sm); 
+}
+
+.btn-secondary {
+  background-color: var(--md-sys-color-surface-container-low, #f8fafc);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { 
+  background-color: var(--md-sys-color-surface-container, #f1f5f9); 
+  border-color: #cbd5e1;
+}
+
+.btn-danger {
+  background-color: #fef2f2;
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+.btn-danger:hover { background-color: #fee2e2; }
+
+/* Header & Navigation Classes */
+.kiosk-header {
+  padding: 1rem 2rem;
+}
+.kiosk-title {
+  font-size: 1.8rem;
+}
+
+.admin-mobile-topbar {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+}
+
+/* Inputs */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.input-field {
+  min-height: 48px; /* M3 accessible touch height */
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.15);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+/* Status Dots */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.status-in { background-color: var(--success); }
+.status-outing { background-color: var(--warning); }
+.status-out { background-color: var(--danger); }
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.split-layout {
+  display: flex;
+  flex-direction: row;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.kiosk-map-pane {
+  flex: 1 1 60%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.kiosk-action-pane {
+  flex: 1 1 40%;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--border);
+  background-color: white;
+}
+
+.admin-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.admin-sidebar {
+  width: 250px;
+  background-color: white;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar-menu {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.attendance-btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.attendance-btn {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.attendance-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.attendance-btn:active {
+  transform: translateY(0);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+th, td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  background-color: var(--md-sys-color-surface-container, #f8fafc);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+tbody tr:hover { background-color: var(--md-sys-color-surface-container-high, #f1f5f9); }
+
+/* Numpad specifically for Kiosk */
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1.5rem auto;
+  width: 100%;
+  max-width: 280px;
+}
+.numpad-btn {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid var(--border);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.numpad-btn:active {
+  transform: scale(0.92);
+  background: var(--bg-color);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .split-layout {
+    flex-direction: column;
+  }
+  
+  .mobile-only {
+    display: flex;
+  }
+
+  .admin-mobile-topbar {
+    display: flex;
+  }
+  
+  .kiosk-map-pane {
+    display: none;
+  }
+  
+  .kiosk-map-pane.show-modal {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: white;
+    padding: 1rem;
+  }
+
+  .kiosk-action-pane {
+    padding: 1rem;
+    border-left: none;
+  }
+
+  .kiosk-header {
+    padding: 0.75rem 1rem !important;
+  }
+  .kiosk-title {
+    font-size: 1.4rem !important;
+  }
+
+  .card {
+    padding: 1rem !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  /* Admin Menu changes - Relative top bar, scrollable, not fixed */
+  .admin-sidebar {
+    width: 100%;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .admin-sidebar-header {
+    display: none;
+  }
+  
+  .admin-sidebar-menu {
+    flex-direction: row;
+    padding: 0.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .admin-sidebar-menu::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .admin-sidebar-menu .menu-item {
+    flex-direction: row;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    white-space: nowrap;
+    min-height: 40px !important;
+    border-radius: var(--radius-full) !important;
+    flex-shrink: 0;
+  }
+  
+  .admin-sidebar-logout {
+    display: none;
+  }
+  
+  .admin-content-area {
+    padding: 1rem; 
+  }
+
+  /* Table becomes hidden, replaced by mobile cards */
+  .desktop-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  /* Make sure modal content doesn't overflow mobile */
+  .modal-content-wrapper {
+    max-width: 90vw !important;
+    width: 100% !important;
+  }
+  
+  .card.modal-content-wrapper {
+    padding: 1.25rem;
+  }
+  
+  .modal-content-wrapper.no-padding {
+    padding: 0 !important;
+  }
+
+  .mobile-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Text wrapping & Korean typography */
+  h2, h3, h4, h5, .input-label {
+    word-break: keep-all !important;
+  }
+
+  .no-wrap-mobile {
+    white-space: nowrap !important;
+  }
+
+  /* 2. Fix horizontal scroll for tabs */
+  .scrollable-tabs-mobile {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* 3. Stack Flex elements vertically on mobile */
+  .stack-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .stack-mobile > * {
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+  }
+
+  /* 4. Flex Wrap on mobile for side-by-side inputs */
+  .wrap-mobile {
+    flex-wrap: wrap !important;
+  }
+
+  /* 5. Fix input overflowing */
+  .input-field, .stat-card {
+    min-width: 0 !important;
+  }
+  
+  /* Kiosk Map Popup zero padding */
+  .kiosk-map-pane.show-modal {
+    padding: 0 !important;
+  }
+  
+  .map-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-fab-extended {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    min-height: 48px !important;
+    border-radius: var(--radius-full) !important;
+    padding: 0 1.2rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-lg) !important;
+    z-index: 1000 !important;
+    font-size: 0.95rem !important;
+    font-weight: bold !important;
+  }
+  .mobile-fab-hidden {
+    display: none !important;
+  }
+  
+  .flex-row-to-col {
+    flex-direction: column !important;
+  }
+  .responsive-gap {
+    gap: 1rem !important;
+  }
+}
+
+/* Galaxy Fold 4 (344px outer screen) & 5.5-inch small phone optimization */
+@media (max-width: 480px) {
+  .kiosk-header {
+    padding: 0.6rem 0.8rem !important;
+    gap: 0.5rem !important;
+  }
+  .kiosk-title {
+    font-size: 1.25rem !important;
+  }
+  .supervisor-badge {
+    font-size: 0.78rem !important;
+    padding: 0.25rem 0.6rem !important;
+  }
+  .card {
+    padding: 0.85rem !important;
+  }
+  .admin-content-area {
+    padding: 0.75rem !important;
+  }
+  .btn {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  .numpad-grid {
+    max-width: min(260px, 85vw) !important;
+    gap: 0.5rem !important;
+    margin: 1rem auto !important;
+  }
+  .numpad-btn {
+    min-height: 48px;
+    font-size: 1.2rem !important;
+  }
+  .stat-cards-container {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  .mobile-fab-extended {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Ultra-narrow devices like Galaxy Fold 4 cover display (344px) */
+  .kiosk-header {
+    padding: 0.5rem !important;
+  }
+  .card {
+    padding: 0.65rem 0.75rem !important;
+  }
+  .admin-content-area {
+    padding: 0.5rem !important;
+  }
+  .numpad-grid {
+    max-width: 220px !important;
+    gap: 0.4rem !important;
+  }
+  .numpad-btn {
+    font-size: 1.1rem !important;
+    min-height: 44px;
+  }
+  .btn {
+    font-size: 0.82rem !important;
+    padding: 0.4rem 0.75rem !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-cards {
+    display: none;
+  }
+  
+  .flex-row-to-col {
+    display: flex;
+    flex-direction: row;
+  }
+  .responsive-gap {
+    gap: 2rem;
+  }
+}
